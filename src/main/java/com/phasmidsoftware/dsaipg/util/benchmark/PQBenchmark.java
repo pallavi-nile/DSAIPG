@@ -4,7 +4,7 @@
 package com.phasmidsoftware.dsaipg.util.benchmark;
 
 import com.phasmidsoftware.dsaipg.adt.pq.PQException;
-import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue;
+import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue2;
 import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue_BinaryHeap;
 import com.phasmidsoftware.dsaipg.util.config.Config;
 import com.phasmidsoftware.dsaipg.util.general.Utilities;
@@ -105,7 +105,7 @@ public class PQBenchmark {
      */
     // Insert and delete random integer array with floyd methods according to parameter
     private void insertArray(int[] a, final boolean floyd) {
-        PriorityQueue<Integer> pq = new PriorityQueue_BinaryHeap<>(a.length, true, Integer::compare, floyd);
+        PriorityQueue2<Integer> pq = new PriorityQueue_BinaryHeap<>(a.length, true, Integer::compare, floyd);
         final Random random = new Random();
         for (int j : a) {
             pq.give(j);

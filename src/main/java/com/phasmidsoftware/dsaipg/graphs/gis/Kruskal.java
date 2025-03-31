@@ -7,7 +7,7 @@ package com.phasmidsoftware.dsaipg.graphs.gis;
 import com.phasmidsoftware.dsaipg.adt.bqs.Queue;
 import com.phasmidsoftware.dsaipg.adt.bqs.Queue_Elements;
 import com.phasmidsoftware.dsaipg.adt.pq.PQException;
-import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue;
+import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue2;
 import com.phasmidsoftware.dsaipg.graphs.undirected.Edge;
 import com.phasmidsoftware.dsaipg.graphs.undirected.EdgeGraph;
 import com.phasmidsoftware.dsaipg.graphs.undirected.Graph_Edges;
@@ -69,15 +69,15 @@ public class Kruskal<V, X extends Comparable<X> & Sequenced> extends MST<V, X> {
         return new TypedUF_HWQUPC<>(vertices);
     }
 
-    private PriorityQueue<Edge<V, X>> createPQ(SizedIterable<Edge<V, X>> edges) {
-        PriorityQueue<Edge<V, X>> result = new PriorityQueue<>(edges.size(), false, Comparator.comparing(Edge::getAttribute), false);
+    private PriorityQueue2<Edge<V, X>> createPQ(SizedIterable<Edge<V, X>> edges) {
+        PriorityQueue2<Edge<V, X>> result = new PriorityQueue2<>(edges.size(), false, Comparator.comparing(Edge::getAttribute), false);
         for (Edge<V, X> e : edges) result.give(e);
         return result;
     }
 
     private void showEdgesInSequence(EdgeGraph<V, X> graph) {
         // TODO remove this debugging code
-        PriorityQueue<Edge<V, X>> tempPQ = createPQ(graph.edges());
+        PriorityQueue2<Edge<V, X>> tempPQ = createPQ(graph.edges());
         while (!tempPQ.isEmpty()) {
             try {
                 System.out.println(tempPQ.take());
@@ -88,7 +88,7 @@ public class Kruskal<V, X extends Comparable<X> & Sequenced> extends MST<V, X> {
     }
 
     private final Queue<Edge<V, X>> queue;
-    private final PriorityQueue<Edge<V, X>> pq;
+    private final PriorityQueue2<Edge<V, X>> pq;
     private final TypedUF<V> uf;
     private final int size;
 

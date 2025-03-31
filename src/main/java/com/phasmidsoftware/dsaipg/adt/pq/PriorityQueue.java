@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class PriorityQueue<T extends Comparable<T>> {
     private ArrayList<T> heap;
     private LinkedList<T> fibHeap;
-    private PriorityQueue<T> fibMinHeap;
+    private PriorityQueue2<T> fibMinHeap;
     private int d;
     private HeapType heapType;
 
@@ -21,7 +21,7 @@ public class PriorityQueue<T extends Comparable<T>> {
     public PriorityQueue(HeapType type) {
         this.heap = new ArrayList<>();
         this.fibHeap = new LinkedList<>();
-        this.fibMinHeap = new PriorityQueue<>(heapType);
+        this.fibMinHeap = new PriorityQueue2<>(heapType);
         this.heapType = type;
         this.d = (type == HeapType.FOUR_ARY_HEAP || type == HeapType.FOUR_ARY_FLOYD) ? 4 : 2;
     }

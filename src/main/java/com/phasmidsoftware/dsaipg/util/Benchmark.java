@@ -7,8 +7,8 @@
  import java.io.FileWriter;
  import java.io.IOException;
  import java.util.Random;
- import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue;
- import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue.HeapType;
+ import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue2;
+ import com.phasmidsoftware.dsaipg.adt.pq.PriorityQueue2.HeapType;
  
  public class Benchmark {
      private static final int INSERTIONS = 16000;
@@ -38,7 +38,7 @@
  
          for (int i = 1; i <= NUM_TRIALS; i++) {
              Random rand = new Random();
-             PriorityQueue<Integer> heap = new PriorityQueue<>(type);
+             PriorityQueue2<Integer> heap = new PriorityQueue2<>(type);
              int maxSpilled = Integer.MIN_VALUE;
  
              // Insert elements

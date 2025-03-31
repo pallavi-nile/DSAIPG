@@ -1,8 +1,8 @@
-package com.phasmidsoftware.dsaipg.adt.pq;
+package com.phasmidsoftware.dsaipg.util;
 
 import java.util.*;
 
-public class PriorityQueue<K extends Comparable<K>> {
+public class PriorityQueue2<K extends Comparable<K>> {
     private final int maxCapacity;
     private final Comparator<K> comparator;
     private final int heapType;
@@ -32,7 +32,7 @@ public class PriorityQueue<K extends Comparable<K>> {
     }
 
     @SuppressWarnings("unchecked")
-    public PriorityQueue(int maxCapacity, int heapType, Comparator<K> comparator) {
+    public PriorityQueue2(int maxCapacity, int heapType, Comparator<K> comparator) {
         this.maxCapacity = maxCapacity;
         this.comparator = comparator;
         this.heapType = heapType;
@@ -209,10 +209,10 @@ public class PriorityQueue<K extends Comparable<K>> {
         int trials = 5;
         Random rand = new Random();
 
-        System.out.println("Fibonacci Heap: " + new PriorityQueue<>(M, 5, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
-        System.out.println("4-ary Heap Floyd: " + new PriorityQueue<>(M, 4, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
-        System.out.println("4-ary Heap: " + new PriorityQueue<>(M, 3, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
-        System.out.println("Binary Heap Floyd: " + new PriorityQueue<>(M, 2, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
-        System.out.println("Binary Heap: " + new PriorityQueue<>(M, 1, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
+        System.out.println("Fibonacci Heap: " + new PriorityQueue2<>(M, 5, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
+        System.out.println("4-ary Heap Floyd: " + new PriorityQueue2<>(M, 4, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
+        System.out.println("4-ary Heap: " + new PriorityQueue2<>(M, 3, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
+        System.out.println("Binary Heap Floyd: " + new PriorityQueue2<>(M, 2, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
+        System.out.println("Binary Heap: " + new PriorityQueue2<>(M, 1, Integer::compare).runBenchmark(insertions, deletions, rand, trials) + " ms");
     }
 }
