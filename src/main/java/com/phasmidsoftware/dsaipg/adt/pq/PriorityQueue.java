@@ -2,6 +2,8 @@ package com.phasmidsoftware.dsaipg.adt.pq;
 
 //import java.util.*;
 
+import com.phasmidsoftware.dsaipg.util.PriorityQueue2;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;

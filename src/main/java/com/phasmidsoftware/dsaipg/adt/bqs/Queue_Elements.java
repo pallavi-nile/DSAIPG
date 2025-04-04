@@ -6,7 +6,7 @@ package com.phasmidsoftware.dsaipg.adt.bqs;
 
 import com.phasmidsoftware.dsaipg.util.SizedIterable;
 import com.phasmidsoftware.dsaipg.util.SizedIterableImpl;
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -86,7 +86,7 @@ public class Queue_Elements<Item> implements SizedIterable<Item>, Queue<Item> {
      *
      * @return an iterator over the elements in this queue
      */
-    @NotNull
+    //@NotNull
     public Iterator<Item> iterator() {
         return new QueueIterator();
     }
