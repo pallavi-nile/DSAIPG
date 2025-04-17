@@ -37,4 +37,23 @@ public class ConnectFourUI extends JFrame {
     private int[] score = new int[3]; // index 1: player1, index 2: player2
     private final List<Point> winningDiscs = new ArrayList<>();
 
-   
+    public ConnectFourUI() {
+        setTitle("Connect Four - MCTS AI");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        setBackground(Color.BLACK);
+
+        // Top button panel
+        JPanel buttonPanel = new JPanel(new GridLayout(1, COLS));
+        buttonPanel.setBackground(Color.BLACK);
+        for (int col = 0; col < COLS; col++) {
+            JButton btn = new JButton("↓");
+            btn.setFont(new Font("SansSerif", Font.BOLD, 18));
+            btn.setBackground(Color.DARK_GRAY);
+            btn.setForeground(Color.CYAN);
+            btn.setFocusPainted(false);
+            int finalCol = col;
+            btn.addActionListener(e -> dropDisc(finalCol));
+            columnButtons[col] = btn;
+            buttonPanel.add(btn);
+        }
