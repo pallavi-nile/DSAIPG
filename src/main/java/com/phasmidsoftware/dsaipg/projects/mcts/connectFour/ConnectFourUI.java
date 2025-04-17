@@ -57,3 +57,266 @@ public class ConnectFourUI extends JFrame {
             columnButtons[col] = btn;
             buttonPanel.add(btn);
         }
+
+        // Board Panel
+        JPanel boardPanel = new JPanel(new GridLayout(ROWS, COLS));
+        boardPanel.setBackground(Color.BLACK);
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                cells[row][col] = new CellPanel(row, col);
+                boardPanel.add(cells[row][col]);
+            }
+        }
+
+        // Bottom control panel
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        controlPanel.setBackground(Color.BLACK);
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        controlPanel.add(statusLabel);
+        controlPanel.add(toggleModeButton);
+        controlPanel.add(playerVsAIButton);
+        controlPanel.add(resetButton);
+        controlPanel.add(newGameButton);
+        controlPanel.add(exitButton);
+
+        // Button actions
+        toggleModeButton.addActionListener(e -> toggleGameMode());
+        resetButton.addActionListener(e -> resetBoard());
+        newGameButton.addActionListener(e -> newGame());
+        exitButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this,
+                "Game Over! Final Score\nPlayer 1: " + score[1] + " | Player 2: " + score[2]);
+            System.exit(0);
+        });
+
+        playerVsAIButton.addActionListener(e -> {
+            newGame();
+            playWithAI = true;
+            toggleModeButton.setEnabled(false);
+            statusLabel.setText("Player vs AI Mode: You are Player 1");
+        });
+
+        add(buttonPanel, BorderLayout.NORTH);
+        add(boardPanel, BorderLayout.CENTER);
+        add(controlPanel, BorderLayout.SOUTH);
+        setSize(700, 650);
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        resetBoard();
+    }
+
+    private void dropDisc(int col) {
+        for (int row = ROWS - 1; row >= 0; row--) {
+            if (board[row][col] == 0) {
+                board[row][col] = currentPlayer;
+                cells[row][col].setPlayer(currentPlayer);
+                if (checkWin(row, col)) {
+                    score[currentPlayer]++;
+                    statusLabel.setText("Player " + currentPlayer + " wins!");
+                    showWinPopup(currentPlayer);
+                    disableBoard();
+                    repaint();
+                } else if (isBoardFull()) {
+                    statusLabel.setText("Draw Game!");
+                } else {
+                    currentPlayer = 3 - currentPlayer;
+                    statusLabel.setText("Player " + currentPlayer + "'s Turn");
+
+                    if (playWithAI && currentPlayer == 2) {
+                        SwingUtilities.invokeLater(this::aiMove);
+                    }
+                }
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Column is full!");
+    }
+
+    private void aiMove() {
+        try {
+            //  ConnectFourState for MCTS
+            ConnectFourGame game = new ConnectFourGame();
+            ConnectFourState state = new ConnectFourState(game, board, 1, null); // currentPlayer = 1 (player just played), now it's AI turn
+    
+            // Get the best move using MCTS
+            ConnectFourMove bestMove = MCTSConnectFour.findBestMove(state);
+    
+            if (bestMove != null) {
+                dropDisc(bestMove.column());
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("MCTS failed, falling back to simple AI: " + e.getMessage());
+        }
+    
+        // Fallback to basic AI logic if MCTS fails
+        for (int col = 0; col < COLS; col++) {
+            if (canDrop(col)) {
+                int row = getAvailableRow(col);
+                board[row][col] = 2;
+                if (checkWin(row, col)) {
+                    board[row][col] = 0;
+                    dropDisc(col);
+                    return;
+                }
+                board[row][col] = 0;
+            }
+        }
+    
+        for (int col = 0; col < COLS; col++) {
+            if (canDrop(col)) {
+                int row = getAvailableRow(col);
+                board[row][col] = 1;
+                if (checkWin(row, col)) {
+                    board[row][col] = 0;
+                    dropDisc(col);
+                    return;
+                }
+                board[row][col] = 0;
+            }
+        }
+    
+        int[] priority = {3, 2, 4, 1, 5, 0, 6};
+        for (int col : priority) {
+            if (canDrop(col)) {
+                dropDisc(col);
+                return;
+            }
+        }
+    }
+    
+
+    private boolean checkWin(int row, int col) {
+        winningDiscs.clear();
+        int player = board[row][col];
+        return checkDirection(row, col, 1, 0, player) ||
+               checkDirection(row, col, 0, 1, player) ||
+               checkDirection(row, col, 1, 1, player) ||
+               checkDirection(row, col, 1, -1, player);
+    }
+
+    private boolean checkDirection(int row, int col, int dr, int dc, int player) {
+        List<Point> temp = new ArrayList<>();
+        temp.add(new Point(row, col));
+
+        int r = row + dr, c = col + dc;
+        while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c] == player) {
+            temp.add(new Point(r, c));
+            r += dr; c += dc;
+        }
+
+        r = row - dr; c = col - dc;
+        while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c] == player) {
+            temp.add(0, new Point(r, c));
+            r -= dr; c -= dc;
+        }
+
+        if (temp.size() >= 4) {
+            winningDiscs.addAll(temp.subList(0, 4));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canDrop(int col) {
+        return board[0][col] == 0;
+    }
+
+    private int getAvailableRow(int col) {
+        for (int row = ROWS - 1; row >= 0; row--) {
+            if (board[row][col] == 0) return row;
+        }
+        return -1;
+    }
+
+    private boolean isBoardFull() {
+        for (int col = 0; col < COLS; col++) {
+            if (board[0][col] == 0) return false;
+        }
+        return true;
+    }
+
+    private void toggleGameMode() {
+        playWithAI = !playWithAI;
+        toggleModeButton.setText(playWithAI ? "Play with AI" : "Play with Friend");
+    }
+
+    private void disableBoard() {
+        for (JButton btn : columnButtons) btn.setEnabled(false);
+    }
+
+    private void enableBoard() {
+        for (JButton btn : columnButtons) btn.setEnabled(true);
+    }
+
+    private void resetBoard() {
+        board = new int[ROWS][COLS];
+        winningDiscs.clear();
+        for (int row = 0; row < ROWS; row++)
+            for (int col = 0; col < COLS; col++)
+                cells[row][col].setPlayer(0);
+        currentPlayer = 1;
+        enableBoard();
+        statusLabel.setText("Player 1's Turn");
+        repaint();
+    }
+
+    private void newGame() {
+        resetBoard();
+        score[1] = 0;
+        score[2] = 0;
+        toggleModeButton.setEnabled(true);
+        statusLabel.setText("Player 1's Turn");
+    }
+
+    private void showWinPopup(int winningPlayer) {
+        JOptionPane.showMessageDialog(this,
+            " Player " + winningPlayer + " wins!\n\nFinal Score\nPlayer 1: " + score[1] + " | Player 2: " + score[2],
+            "Game Over", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private class CellPanel extends JPanel {
+        private final int row, col;
+        private int player = 0;
+
+        public CellPanel(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+
+        public void setPlayer(int player) {
+            this.player = player;
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            setBackground(Color.cyan);
+            Graphics2D g2 = (Graphics2D) g;
+
+            boolean isWinner = winningDiscs.contains(new Point(row, col));
+            g2.setColor(Color.CYAN);
+            g2.drawRect(0, 0, getWidth(), getHeight());
+
+            if (player == 1) g2.setColor(isWinner ? Color.GRAY : Color.PINK);
+            else if (player == 2) g2.setColor(isWinner ? Color.GRAY : Color.GREEN);
+            else g2.setColor(Color.WHITE);
+
+            g2.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
+
+            if (isWinner) {
+                g2.setColor(Color.BLACK);
+                g2.setStroke(new BasicStroke(3));
+                g2.drawOval(5, 5, getWidth() - 10, getHeight() - 10);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(ConnectFourUI::new);
+    }
+}
