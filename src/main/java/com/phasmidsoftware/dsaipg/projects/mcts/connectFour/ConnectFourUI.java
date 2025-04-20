@@ -314,27 +314,30 @@ public class ConnectFourUI extends JFrame {
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            setBackground(Color.lightGray);
-            Graphics2D g2 = (Graphics2D) g;
+protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    setBackground(Color.lightGray);
+    Graphics2D g2 = (Graphics2D) g;
 
-            boolean isWinner = winningDiscs.contains(new Point(row, col));
-            g2.setColor(Color.black);
-            g2.drawRect(0, 0, getWidth(), getHeight());
+    boolean isWinner = winningDiscs.contains(new Point(row, col));
+    g2.setColor(Color.black);
+    g2.drawRect(0, 0, getWidth(), getHeight());
 
-            if (player == 1) g2.setColor(isWinner ? Color.BLACK : Color.BLUE);
-            else if (player == 2) g2.setColor(isWinner ? Color.BLACK : Color.YELLOW);
-            else g2.setColor(Color.WHITE);
+    // Keep original disk color
+    if (player == 1) g2.setColor(Color.BLUE);
+    else if (player == 2) g2.setColor(Color.YELLOW);
+    else g2.setColor(Color.WHITE);
 
-            g2.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
+    g2.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
 
-            if (isWinner) {
-                g2.setColor(Color.BLACK);
-                g2.setStroke(new BasicStroke(3));
-                g2.drawOval(5, 5, getWidth() - 10, getHeight() - 10);
-            }
-        }
+    // Only draw white border for winning discs
+    if (isWinner) {
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(4));
+        g2.drawOval(5, 5, getWidth() - 10, getHeight() - 10);
+    }
+}
+
     }
 
     public static void main(String[] args) {
