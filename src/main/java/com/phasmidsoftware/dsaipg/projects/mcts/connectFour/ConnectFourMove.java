@@ -1,4 +1,4 @@
-package com.phasmidsoftware.dsaipg.projects.mcts.connectFour;
+package com.phasmidsoftware.dsaipg.projects.mcts.connectfour;
 
 public class ConnectFourMove {
     

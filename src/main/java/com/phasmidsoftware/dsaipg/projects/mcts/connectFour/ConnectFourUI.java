@@ -49,8 +49,8 @@ public class ConnectFourUI extends JFrame {
         for (int col = 0; col < COLS; col++) {
             JButton btn = new JButton("↓");
             btn.setFont(new Font("SansSerif", Font.BOLD, 18));
-            btn.setBackground(Color.DARK_GRAY);
-            btn.setForeground(Color.CYAN);
+            btn.setBackground(Color.white);
+            btn.setForeground(Color.BLACK);
             btn.setFocusPainted(false);
             int finalCol = col;
             btn.addActionListener(e -> dropDisc(finalCol));
@@ -137,28 +137,40 @@ public class ConnectFourUI extends JFrame {
 
     private void aiMove() {
         try {
-            //  ConnectFourState for MCTS
-            ConnectFourGame game = new ConnectFourGame();
-            ConnectFourState state = new ConnectFourState(game, board, 1, null); // currentPlayer = 1 (player just played), now it's AI turn
+            System.out.println("AI is calculating using MCTS...");
     
-            // Get the best move using MCTS
+            long startTime = System.currentTimeMillis();
+    
+            // Create state for MCTS
+            ConnectFourGame game = new ConnectFourGame();
+            ConnectFourState state = new ConnectFourState(game, board, 1, null);
+    
+            // Get best move from MCTS
             ConnectFourMove bestMove = MCTSConnectFour.findBestMove(state);
     
+            long endTime = System.currentTimeMillis();
+            System.out.println("MCTS AI move took: " + (endTime - startTime) + " ms");
+    
             if (bestMove != null) {
+                Thread.sleep(1000); // delay AI response for 1 second
                 dropDisc(bestMove.column());
                 return;
             }
+    
         } catch (Exception e) {
-            System.err.println("MCTS failed, falling back to simple AI: " + e.getMessage());
+            System.err.println("MCTS failed: " + e.getMessage());
         }
     
-        // Fallback to basic AI logic if MCTS fails
+        // Fallback AI: try to win
         for (int col = 0; col < COLS; col++) {
             if (canDrop(col)) {
                 int row = getAvailableRow(col);
                 board[row][col] = 2;
                 if (checkWin(row, col)) {
                     board[row][col] = 0;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {}
                     dropDisc(col);
                     return;
                 }
@@ -166,12 +178,16 @@ public class ConnectFourUI extends JFrame {
             }
         }
     
+        // Fallback AI: block opponent
         for (int col = 0; col < COLS; col++) {
             if (canDrop(col)) {
                 int row = getAvailableRow(col);
                 board[row][col] = 1;
                 if (checkWin(row, col)) {
                     board[row][col] = 0;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {}
                     dropDisc(col);
                     return;
                 }
@@ -179,14 +195,19 @@ public class ConnectFourUI extends JFrame {
             }
         }
     
+        // Fallback AI: preferred center strategy
         int[] priority = {3, 2, 4, 1, 5, 0, 6};
         for (int col : priority) {
             if (canDrop(col)) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
                 dropDisc(col);
                 return;
             }
         }
     }
+    
     
 
     private boolean checkWin(int row, int col) {
@@ -295,15 +316,15 @@ public class ConnectFourUI extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            setBackground(Color.cyan);
+            setBackground(Color.lightGray);
             Graphics2D g2 = (Graphics2D) g;
 
             boolean isWinner = winningDiscs.contains(new Point(row, col));
-            g2.setColor(Color.CYAN);
+            g2.setColor(Color.black);
             g2.drawRect(0, 0, getWidth(), getHeight());
 
-            if (player == 1) g2.setColor(isWinner ? Color.GRAY : Color.PINK);
-            else if (player == 2) g2.setColor(isWinner ? Color.GRAY : Color.GREEN);
+            if (player == 1) g2.setColor(isWinner ? Color.BLACK : Color.BLUE);
+            else if (player == 2) g2.setColor(isWinner ? Color.BLACK : Color.YELLOW);
             else g2.setColor(Color.WHITE);
 
             g2.fillOval(5, 5, getWidth() - 10, getHeight() - 10);
